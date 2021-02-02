@@ -4,7 +4,7 @@
 
 A Powercord plugin for bottom, following the [bottom spec](https://github.com/bottom-software-foundation/spec).
 
-**WARNING**: This plugin is incompatible with the [pronoundb-powercord](https://github.com/cyyynthia/pronoundb-powercord) plugin. The issue is being looked into.
+**WARNING**: This plugin is incompatible with the [pronoundb-powercord](https://github.com/cyyynthia/pronoundb-powercord) plugin. The issue has been found and is as of now being fixed.
 
 Perhaps you have found yourself in this situation before:
 
