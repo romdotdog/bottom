@@ -5,9 +5,7 @@ const {
 	FluxDispatcher,
 	getModule,
 	constants,
-	messages: MessageEvents,
-	channels: { getChannelId },
-	contextMenu: { openContextMenu }
+	messages: MessageEvents
 } = require("powercord/webpack");
 const { inject, uninject } = require("powercord/injector");
 
