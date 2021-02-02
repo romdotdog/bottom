@@ -115,14 +115,9 @@ module.exports = class PowerBottom extends (
 			if (
 				args[0].type == "MESSAGE_UPDATE" &&
 				!args[0].bottomTranslation &&
-				handler.cache[args[0].message.channel_id] &&
-				handler.cache[args[0].message.channel_id][args[0].message.id]
+				handler.cache.get(args[0].message)
 			) {
-				handler.removeMessage(
-					args[0].message.channel_id,
-					args[0].message.id,
-					false
-				);
+				handler.cache.remove(args[0].message);
 			}
 			return args;
 		});

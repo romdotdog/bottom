@@ -40,7 +40,7 @@ class BottomHandler {
 
 		const cached = this.cache.update(
 			message,
-			(m) => m || { originalContent: message.content }
+			(m) => m || { originalContent: message.content, layers: 0 }
 		);
 
 		// the message hasn't been edited, let's try to decode it
@@ -70,8 +70,8 @@ class BottomHandler {
 	}
 
 	removeMessage(channelId, messageId, originalContent) {
-		let message = getMessage(channelId, messageId);
-		message.content = originalContent;
+        let message = getMessage(channelId, messageId);
+        if (originalContent) message.content = originalContent;
 		this.updateMessage(message);
 	}
 }
