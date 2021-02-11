@@ -80,7 +80,7 @@ function inlineEncode(p, s, text) {
 	return result.join("");
 }
 
-module.exports = class PowerBottom extends (
+module.exports = class Bottom extends (
 	Plugin
 ) {
 	constructor() {
@@ -118,8 +118,8 @@ module.exports = class PowerBottom extends (
 				handler.cache.get(args[0].message)
 			) {
 				handler.cache.remove(args[0].message);
-			}
-			return args;
+            }
+            return args;
 		});
 
 		inject(
