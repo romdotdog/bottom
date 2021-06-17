@@ -1,13 +1,13 @@
 const { getModule, FluxDispatcher } = require("powercord/webpack");
 const { getMessage } = getModule(["getMessages"], false);
 
-const Bottom = require("../bottom_wasm");
 const Cache = require("./Cache.js");
 
 class BottomHandler {
-	constructor() {
+	constructor(decode) {
 		this.cache = new Cache();
 		this.re = /((?:((?:\uD83E\uDEC2)?(?:💖)*(?:✨)*(?:🥺)*(?:,)*(❤️)?)(?:👉👈|\u200b))+)/gm;
+		this.decode = decode;
 	}
 
 	isTranslated(message) {
@@ -22,7 +22,7 @@ class BottomHandler {
 	translate(text) {
 		return text.replace(
 			this.re,
-			(str, p1, offset, s) => Bottom.decode(p1) || p1
+			(str, p1, offset, s) => this.decode(p1) || p1
 		)
 	}
 

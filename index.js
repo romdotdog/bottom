@@ -18,14 +18,13 @@ const MessageContent = getModule(
 	false
 );
 
-const Bottom = require("./bottom_wasm");
+const BottomWASM = require("./bottom_wasm");
 
 const Settings = require("./components/Settings.jsx");
 const BottomButton = require("./components/BottomButton.jsx");
 const Indicator = require("./components/Indicator.jsx");
 
 const BottomHandler = require("./bottomHandler")
-const handler = new BottomHandler();
 
 const escapeRegex = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const count = (string, subString) => {
@@ -72,7 +71,7 @@ function inlineEncode(p, s, text) {
 
 		result.push(text.slice(idx, startIndex));
 		startIndex += pl;
-		result.push(Bottom.encode(text.slice(startIndex, endIndex)));
+		result.push(BottomWASM.encode(text.slice(startIndex, endIndex)));
 		endIndex += sl;
 		idx = endIndex;
 	}
@@ -89,6 +88,9 @@ module.exports = class Bottom extends (
 	}
 
 	async startPlugin() {
+		await BottomWASM.init();
+		this.handler = new BottomHandler(BottomWASM.decode);
+
 		powercord.api.settings.registerSettings(this.entityID, {
 			category: this.entityID,
 			label: "Power Bottom",
@@ -103,7 +105,7 @@ module.exports = class Bottom extends (
 			description: "Translate and send text as bottom 🥺",
 			usage: "{c} [text]",
 			executor: (args) => {
-				var translated = Bottom.encode(args.join(" "));
+				var translated = BottomWASM.encode(args.join(" "));
 				return {
 					send: true,
 					result: translated
@@ -115,9 +117,9 @@ module.exports = class Bottom extends (
 			if (
 				args[0].type == "MESSAGE_UPDATE" &&
 				!args[0].bottomTranslation &&
-				handler.cache.get(args[0].message)
+				this.handler.cache.get(args[0].message)
 			) {
-				handler.cache.remove(args[0].message);
+				this.handler.cache.remove(args[0].message);
             }
             return args;
 		});
@@ -136,7 +138,7 @@ module.exports = class Bottom extends (
 
 					switch (sendType) {
 						case 0: // all
-							content = Bottom.encode(content);
+							content = BottomWASM.encode(content);
 							break;
 						case 1: // inline greedy
 							var prefix = escapeRegex(
@@ -147,7 +149,7 @@ module.exports = class Bottom extends (
 							);
 							var reg = new RegExp(`${prefix}(.+)${suffix}`, "gm");
 							content = content.replace(reg, (str, p1, o, s) =>
-								Bottom.encode(p1)
+								BottomWASM.encode(p1)
 							);
 							break;
 						case 2: // inline parsed
@@ -203,7 +205,7 @@ module.exports = class Bottom extends (
 					res.props.children.unshift(
 						React.createElement(this.ConnectedBottomButton, {
 							message,
-							handler
+							handler: this.handler
 						})
 					);
 				}
@@ -219,12 +221,12 @@ module.exports = class Bottom extends (
 			"type",
 			(args, res) => {
 				try {
-                    const m = handler.cache.get(args[0].message)
+                    const m = this.handler.cache.get(args[0].message)
 					if (!m?.top) {
 						try {
 							res.props.children.push(
 								React.createElement(Indicator, {
-									bottom: !handler.isTranslated(args[0].message),
+									bottom: !this.handler.isTranslated(args[0].message),
 									layers: m.layers
 								})
 							);
